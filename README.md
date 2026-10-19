@@ -13,10 +13,10 @@ The project has no Ericsson product list, current equipment details, prices, quo
 1. Enter the traffic demand in megabits per second (Mbps).
 2. Set channel quality from `0.25` (poor) to `1.00` (excellent).
 3. Enter the maximum delay in milliseconds (ms).
-4. Enter the reliability you need as a number from `0` to `1`. For example, `0.95` means 95%.
+4. Enter the reliability you need as a number from `0.01` to `1`. For example, `0.95` means 95%.
 5. Select **Compare options**.
 
-ECHO-6G compares four strategies using the same inputs. It recommends the option with the lowest modelled energy score among those that meet both the delay and reliability targets. If no option meets both targets, it shows that result and marks the closest-scoring option for review. You can download the comparison as a CSV file.
+ECHO-6G compares four strategies using the same inputs. It recommends the option with the lowest modelled energy score among those that meet both the delay and reliability targets. If no option meets both targets, it says so and shows the option with the highest score from this model for review. You can download the comparison as a CSV file that opens in spreadsheet software.
 
 The word “modelled” matters: these results are estimates from this software, not measurements of a real network.
 
