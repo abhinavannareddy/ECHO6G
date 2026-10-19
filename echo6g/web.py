@@ -53,12 +53,9 @@ def evaluate_scenario(payload: Any) -> dict[str, Any]:
 
 
 class DecisionHandler(BaseHTTPRequestHandler):
+    # Keep Python's version out of the Server header.
     server_version = "ECHO6G"
     sys_version = ""
-
-    def log_message(self, fmt: str, *args: Any) -> None:
-        # Keep logs useful while avoiding a custom product banner in responses.
-        super().log_message(fmt, *args)
 
     def _send(self, status: HTTPStatus, body: bytes, content_type: str) -> None:
         self.send_response(status)
