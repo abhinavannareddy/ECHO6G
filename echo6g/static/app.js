@@ -12,6 +12,12 @@ const optionsBody = document.querySelector("#options-body");
 const exportButton = document.querySelector("#export-button");
 const channel = document.querySelector("#channel_quality");
 const channelOutput = document.querySelector("#channel-output");
+const scenarioPreset = document.querySelector("#scenario_preset");
+const scenarioInputs = {
+  office: { traffic_mbps: 55, channel_quality: 0.9, latency_budget_ms: 30, reliability_target: 0.93 },
+  factory: { traffic_mbps: 80, channel_quality: 0.72, latency_budget_ms: 20, reliability_target: 0.95 },
+  venue: { traffic_mbps: 145, channel_quality: 0.55, latency_budget_ms: 50, reliability_target: 0.93 },
+};
 
 const labels = {
   energy_saver: ["Energy saver", "Lowest provisioning baseline"],
@@ -22,6 +28,14 @@ const labels = {
 let latestResult = null;
 
 channel.addEventListener("input", () => { channelOutput.value = Number(channel.value).toFixed(2); });
+
+scenarioPreset.addEventListener("change", () => {
+  const values = scenarioInputs[scenarioPreset.value];
+  if (!values) return;
+  for (const [name, value] of Object.entries(values)) form.elements[name].value = value;
+  channelOutput.value = Number(channel.value).toFixed(2);
+  form.requestSubmit();
+});
 
 function clearError() {
   errorBanner.hidden = true;
@@ -68,7 +82,7 @@ function render(data) {
         const strong = document.createElement("strong");
         strong.textContent = cell.content[0];
         const detail = document.createElement("span");
-        detail.textContent = cell.content[1];
+        detail.textContent = `${cell.content[1]}${option.fallback_used ? " · fallback used" : ""}`;
         td.append(strong, detail);
       } else if (index === 1) {
         const tag = document.createElement("span");
@@ -115,9 +129,13 @@ form.addEventListener("submit", async (event) => {
 exportButton.addEventListener("click", () => {
   if (!latestResult) return;
   const rows = [
-    ["strategy", "sla_met", "throughput_mbps", "latency_ms", "reliability", "relative_energy_units", "resource_level", "fallback_used"],
+    ["strategy", "traffic_mbps", "channel_quality", "latency_target_ms", "reliability_target", "sla_met", "throughput_mbps", "latency_ms", "reliability", "relative_energy_units", "resource_level", "fallback_used"],
     ...latestResult.options.map((option) => [
       labels[option.policy_name]?.[0] ?? option.policy_name,
+      latestResult.scenario.traffic_mbps,
+      latestResult.scenario.channel_quality,
+      latestResult.scenario.latency_budget_ms,
+      latestResult.scenario.reliability_target,
       option.sla_met,
       option.throughput_mbps,
       option.latency_ms,
@@ -132,8 +150,10 @@ exportButton.addEventListener("click", () => {
   const link = document.createElement("a");
   link.href = url;
   link.download = "echo6g-scenario-comparison.csv";
+  document.body.append(link);
   link.click();
-  URL.revokeObjectURL(url);
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
 
 form.requestSubmit();

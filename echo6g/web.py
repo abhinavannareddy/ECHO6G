@@ -9,9 +9,7 @@ import math
 from importlib.resources import files
 from typing import Any
 
-from .models import Decision, Scenario
-from .policies import AdaptiveController, EnergySaver, FixedMiddle, PerformanceFirst, make_training_scenarios
-from .simulator import evaluate
+from .native import evaluate_native
 
 
 MAX_REQUEST_BYTES = 8_192
@@ -19,16 +17,10 @@ STATIC_FILES = {
     "/": ("index.html", "text/html; charset=utf-8"),
     "/styles.css": ("styles.css", "text/css; charset=utf-8"),
     "/app.js": ("app.js", "text/javascript; charset=utf-8"),
+    "/network-illustration.svg": ("network-illustration.svg", "image/svg+xml; charset=utf-8"),
+    "/favicon.svg": ("favicon.svg", "image/svg+xml; charset=utf-8"),
 }
 INPUT_FIELDS = ("traffic_mbps", "channel_quality", "latency_budget_ms", "reliability_target")
-POLICY_DESCRIPTIONS = {
-    "energy_saver": "Lowest provisioning baseline",
-    "fixed_middle": "Fixed provisioning baseline",
-    "performance_first": "Maximum provisioning baseline",
-    "echo_adaptive": "Context-aware adaptive policy",
-}
-
-
 def evaluate_scenario(payload: Any) -> dict[str, Any]:
     """Validate buyer inputs and compare policies for one modeled scenario."""
     if not isinstance(payload, dict):
@@ -49,45 +41,15 @@ def evaluate_scenario(payload: Any) -> dict[str, Any]:
         if not math.isfinite(values[field]):
             raise ValueError(f"{field} must be a finite number.")
 
-    scenario = Scenario(**values, name="buyer_scenario")
-    try:
-        scenario.validate()
-    except ValueError as exc:
-        raise ValueError(str(exc)) from exc
-
-    adaptive = AdaptiveController().fit(make_training_scenarios(seed=43, n=240))
-    policies = [EnergySaver(), FixedMiddle(), PerformanceFirst(), adaptive]
-    outcomes = [
-        evaluate(scenario, policy.choose(scenario)).to_dict()
-        for policy in policies
-    ]
-    viable = [outcome for outcome in outcomes if outcome["sla_met"]]
-    if viable:
-        selected = min(viable, key=lambda item: (item["energy_units"], -item["reward"]))
-        recommendation = {
-            "status": "meets_sla",
-            "policy": selected["policy_name"],
-            "resource_level": selected["resource_level"],
-            "reason": "Lowest modelled energy among options that meet both stated targets.",
-        }
-    else:
-        selected = max(outcomes, key=lambda item: item["reward"])
-        recommendation = {
-            "status": "no_fit",
-            "policy": selected["policy_name"],
-            "resource_level": selected["resource_level"],
-            "reason": "No tested option meets both targets. This is the highest-scoring modelled option; review the gap before procurement.",
-        }
-
-    return {
-        "scenario": values,
-        "recommendation": recommendation,
-        "options": [
-            {**outcome, "description": POLICY_DESCRIPTIONS[outcome["policy_name"]]}
-            for outcome in outcomes
-        ],
-        "model_notice": "Synthetic software model. No Ericsson catalogue, price, hardware measurement, or 3GPP-compliant simulation is used.",
-    }
+    if not 0 <= values["traffic_mbps"] <= 10_000:
+        raise ValueError("traffic_mbps must be between 0 and 10000 Mbps")
+    if not 0.25 <= values["channel_quality"] <= 1.0:
+        raise ValueError("channel_quality must be in [0.25, 1.0]")
+    if not 0 < values["latency_budget_ms"] <= 10_000:
+        raise ValueError("latency_budget_ms must be greater than 0 and no more than 10000 ms")
+    if not 0.01 <= values["reliability_target"] <= 1.0:
+        raise ValueError("reliability_target must be between 0.01 and 1")
+    return evaluate_native(values)
 
 
 class DecisionHandler(BaseHTTPRequestHandler):
@@ -147,6 +109,11 @@ class DecisionHandler(BaseHTTPRequestHandler):
             return
         except ValueError as exc:
             self._send_json(HTTPStatus.UNPROCESSABLE_ENTITY, {"error": str(exc)})
+            return
+        except RuntimeError:
+            self._send_json(HTTPStatus.SERVICE_UNAVAILABLE, {
+                "error": "The model service is not ready. Check that the C++ engine is built, then try again."
+            })
             return
         self._send_json(HTTPStatus.OK, result)
 

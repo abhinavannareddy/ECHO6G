@@ -1,14 +1,14 @@
 .PHONY: install test benchmark web build deploy stop
 install:
-	python -m pip install -e ".[dev]"
+	python -m pip install -e .
 test:
-	python -m pytest -q
+	docker build --target test -t echo6g-tests .
 benchmark:
 	python -m echo6g.cli --output results --seed 2026 --scenarios 160
 web:
 	echo6g-web
 build:
-	python -m pip wheel --no-deps --no-build-isolation . --wheel-dir dist
+	docker compose build
 deploy:
 	docker compose up --build -d
 stop:

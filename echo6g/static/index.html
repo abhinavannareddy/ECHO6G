@@ -4,8 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f4f6f8">
-    <meta name="description" content="Compare modeled network resource strategies against your service targets before procurement.">
-    <title>ECHO-6G — Ericsson Network Buyer Workspace</title>
+    <meta name="description" content="Compare four modeled network resource strategies against your service targets.">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <title>ECHO-6G — Network Buyer Workspace</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/app.js" defer></script>
   </head>
@@ -16,21 +17,22 @@
         <span class="brand-name">ECHO<span>6G</span></span>
       </a>
       <div class="topbar-right">
-        <span class="product-label">ERICSSON NETWORK BUYER EVALUATION</span>
+        <span class="product-label">INDEPENDENT NETWORK BUYER TOOL</span>
         <span class="status-pill"><span class="status-dot"></span>Model ready</span>
       </div>
     </header>
 
     <main class="shell">
       <section class="intro" aria-labelledby="page-title">
-        <div>
-          <p class="eyebrow">INDEPENDENT ERICSSON BUYER EVALUATION</p>
-          <h1 id="page-title">Make the network<br class="mobile-break"> case with confidence.</h1>
-          <p class="intro-copy">An independent screening tool for Ericsson network buyers. Test a service scenario against four resource strategies, see where requirements are met, and spot gaps to discuss before procurement.</p>
+        <div class="intro-copy-block">
+          <p class="eyebrow">A CLEARER WAY TO COMPARE SERVICE NEEDS</p>
+          <h1 id="page-title">Compare network options against your service needs.</h1>
+          <p class="intro-copy">Try a service scenario, see how four resource strategies compare, and take the open questions to your supplier.</p>
+          <p class="intro-caption">A simple model to help prepare a conversation. It does not test or recommend real Ericsson equipment.</p>
         </div>
-        <div class="intro-aside">
-          <span class="aside-icon" aria-hidden="true">↗</span>
-          <span>SCENARIO<br>COMPARISON</span>
+        <div class="hero-visual">
+          <img src="/network-illustration.svg" alt="Illustration of a network connecting services to a comparison dashboard">
+          <span>One scenario <span aria-hidden="true">·</span> four strategies <span aria-hidden="true">·</span> clear trade-offs</span>
         </div>
       </section>
 
@@ -46,6 +48,17 @@
             <span class="step-number">01</span>
           </div>
 
+          <label class="field preset-field" for="scenario_preset">
+            <span class="field-title">Start with an example</span>
+            <span class="field-hint">These are made-up values. You can change them.</span>
+            <select id="scenario_preset">
+              <option value="">Choose an example…</option>
+              <option value="office">Office campus</option>
+              <option value="factory">Factory floor</option>
+              <option value="venue">Busy venue</option>
+            </select>
+          </label>
+
           <label class="field" for="traffic_mbps">
             <span class="field-title">Offered traffic</span>
             <span class="field-hint">Modelled demand for this service</span>
@@ -55,7 +68,7 @@
           <label class="field" for="channel_quality">
             <span class="field-title">Channel quality</span>
             <span class="field-hint">Use 0.25 for poor, 1.00 for excellent</span>
-            <span class="range-control"><input id="channel_quality" name="channel_quality" type="range" min="0.25" max="1" step="0.01" value="0.82" aria-describedby="channel-output"><output id="channel-output" for="channel_quality">0.82</output></span>
+            <span class="range-control"><input id="channel_quality" name="channel_quality" type="range" min="0.25" max="1" step="0.01" value="0.82" aria-describedby="channel-output"><output id="channel-output" for="channel_quality" aria-live="polite">0.82</output></span>
           </label>
 
           <label class="field" for="latency_budget_ms">

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 250" role="img" aria-labelledby="title desc">
+  <title id="title">How ECHO-6G works</title>
+  <desc id="desc">Enter service targets, compare four modeled strategies, then discuss any gaps with a supplier.</desc>
+  <rect width="1200" height="250" rx="24" fill="#f0f6f5"/>
+  <g font-family="Arial, sans-serif">
+    <g transform="translate(60 42)">
+      <circle cx="54" cy="55" r="38" fill="#dcefeb"/>
+      <path d="M42 39h25v35H42zM47 32h15v7H47zM48 48h13M48 56h13M48 64h9" fill="none" stroke="#087f83" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="0" y="126" fill="#193243" font-size="19" font-weight="700">1. Set your targets</text>
+      <text x="0" y="154" fill="#61737d" font-size="13">Enter traffic, channel quality,</text>
+      <text x="0" y="174" fill="#61737d" font-size="13">delay and reliability.</text>
+    </g>
+    <path d="M387 97h74m-12-12 12 12-12 12" fill="none" stroke="#82b9b2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(490 42)">
+      <circle cx="54" cy="55" r="38" fill="#e1eee9"/>
+      <path d="M33 70V49h12v21M50 70V36h12v34M67 70V44h12v26" fill="none" stroke="#28745d" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M30 75h52" stroke="#28745d" stroke-width="3" stroke-linecap="round"/>
+      <text x="0" y="126" fill="#193243" font-size="19" font-weight="700">2. Compare options</text>
+      <text x="0" y="154" fill="#61737d" font-size="13">See the modelled trade-offs</text>
+      <text x="0" y="174" fill="#61737d" font-size="13">side by side.</text>
+    </g>
+    <path d="M817 97h74m-12-12 12 12-12 12" fill="none" stroke="#82b9b2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(920 42)">
+      <circle cx="54" cy="55" r="38" fill="#f5ecdf"/>
+      <path d="M39 40h28v31H39zM46 51h14M46 58h14M46 65h9M34 76h38" fill="none" stroke="#a66d34" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="0" y="126" fill="#193243" font-size="19" font-weight="700">3. Ask better questions</text>
+      <text x="0" y="154" fill="#61737d" font-size="13">Take the results to your supplier</text>
+      <text x="0" y="174" fill="#61737d" font-size="13">and check against real measurements.</text>
+    </g>
+  </g>
+</svg>

@@ -1,85 +1,82 @@
 # ECHO-6G
 
-ECHO-6G helps network buyers compare service needs with four simple ways of assigning network resources. Enter a scenario to see which options meet its speed, delay, and reliability targets.
+[![Checks](https://github.com/abhinavannareddy/ECHO6G/actions/workflows/checks.yml/badge.svg)](https://github.com/abhinavannareddy/ECHO6G/actions/workflows/checks.yml)
 
-## Who this is for
+![ECHO-6G network comparison workspace](echo6g/static/network-illustration.svg)
 
-This is an independent screening tool for people evaluating Ericsson networks. It is not made, sold, or approved by Ericsson.
+ECHO-6G compares a service scenario with four network resource strategies. It shows how each option performs in a small model and lets you download the results as a CSV file.
 
-The project has no Ericsson product list, current equipment details, prices, quotes, or ordering system. It does not test Ericsson hardware or tell you which supplier to choose. Its results come from a simplified computer model. Check any buying or deployment decision with the supplier and with real network measurements.
+This is an independent project. It is not made, sold, or approved by Ericsson.
 
-## How to use it
+## How it works
 
-1. Enter the traffic demand in megabits per second (Mbps).
-2. Set channel quality from `0.25` (poor) to `1.00` (excellent).
-3. Enter the maximum delay in milliseconds (ms).
-4. Enter the reliability you need as a number from `0.01` to `1`. For example, `0.95` means 95%.
-5. Select **Compare options**.
+![Three steps: set targets, compare options, and discuss results with a supplier](docs/workflow.svg)
 
-ECHO-6G compares four strategies using the same inputs. It recommends the option with the lowest modelled energy score among those that meet both the delay and reliability targets. If no option meets both targets, it says so and shows the option with the highest score from this model for review. You can download the comparison as a CSV file that opens in spreadsheet software.
+1. Enter traffic, channel quality, a delay limit, and a reliability target.
+2. Compare four strategies using the same values.
+3. Export the results and discuss any gaps with your supplier.
 
-The word “modelled” matters: these results are estimates from this software, not measurements of a real network.
+The tool highlights the lowest-energy option in its model that meets both targets. If none meet them, it says so and shows the highest-scoring option for review.
 
-## Run on your computer
+## The model and its data
 
-You need Python 3.10 or newer.
+The network model and benchmark are written in C++17. The Python code runs the web page and passes each request to the C++ engine.
 
-In Windows PowerShell, run:
+There are no customer datasets or Ericsson product records in this project. The program makes repeatable training and test scenarios from a random seed. These values help check the software; they are not measurements from a real network.
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -e ".[dev]"
-echo6g-web
-```
+The model uses simplified formulas for capacity, delay, reliability, and relative energy. It is not a 3GPP-compliant simulation and has not been checked against radio equipment. The energy value is not a power reading, price, or carbon estimate. There are no product listings, quotes, or ordering features. Use the results to prepare questions, not as the only basis for a purchase or deployment.
 
-Open <http://127.0.0.1:8080>. Press `Ctrl+C` in PowerShell to stop the web app.
+The formulas and assumptions are in [`docs/MODEL.md`](docs/MODEL.md). Example benchmark results and instructions are in [`results/RESULTS.md`](results/RESULTS.md).
 
 ## Run with Docker
 
-With Docker Desktop running, start the app from this folder:
+Docker builds the C++ engine and starts the app. From this folder, run:
 
 ```powershell
 docker compose up --build -d
 ```
 
-Open <http://localhost:8080>. The app is available only on your computer. To stop it, run `docker compose down`.
+Open <http://localhost:8080>. The app is available on your computer. Stop it with `docker compose down`.
 
-This project does not include a public website or cloud hosting setup.
+To run the C++ and web checks without starting the app, run:
+
+```powershell
+docker build --target test -t echo6g-tests .
+```
+
+## Build and run without Docker
+
+You need Python 3.10 or newer and a C++17 compiler. On Windows, open a Visual Studio Developer PowerShell, then run:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+New-Item -ItemType Directory -Force build\native
+cl /std:c++17 /O2 /EHsc /I echo6g\native echo6g\native\main.cpp echo6g\native\engine.cpp /Fe:build\native\echo6g-engine.exe
+$env:ECHO6G_ENGINE = (Resolve-Path build\native\echo6g-engine.exe).Path
+python -m pip install -e .
+python -m unittest discover -s tests -v
+echo6g-web
+```
+
+Open <http://127.0.0.1:8080>. Press `Ctrl+C` to stop the app.
 
 ## Run the benchmark
 
-The command line benchmark compares the four strategies across a set of generated test scenarios. For example:
+The benchmark supports up to 10,000 scenarios. Each scenario is checked against all four strategies. After building the C++ engine, run:
 
 ```powershell
-python -m pip install -e ".[dev]"
-python -m echo6g.cli --output results --seed 2026 --scenarios 160
+python -m echo6g.cli --output results --seed 2026 --scenarios 10000
 ```
 
-The command writes two files:
-
-- `results/benchmark_results.csv` has one row for each strategy and scenario.
-- `results/benchmark_summary.csv` shows the average results for each strategy.
-
-The benchmark accepts from 1 to 10,000 scenarios per run. The scenarios are generated by the program; they are not customer or operator data.
-
-## Run the tests
-
-```powershell
-python -m pytest -q
-```
-
-## What the numbers mean
-
-The simulator uses made-up but repeatable formulas for network capacity, delay, reliability, and energy. The energy number is a relative score. It is not a bill, a power reading, or a carbon estimate. A result that meets the model's targets does not guarantee that a real network will meet them.
-
-See [`docs/MODEL.md`](docs/MODEL.md) for the formulas and their limits.
+The command writes `benchmark_results.csv` and `benchmark_summary.csv` under `results/`. These generated files are not included in the GitHub repository.
 
 ## Project files
 
-- `echo6g/` — the simulator, strategies, command line tool, and web app.
-- `echo6g/static/` — the web page, its styles, and browser code.
-- `tests/` — checks for the simulator and web app.
-- `docs/MODEL.md` — an explanation of the formulas.
-- `results/RESULTS.md` — a sample benchmark and how to read it.
-- `CONTRIBUTORS.md` — contributor name.
+- `echo6g/native/` — the C++ model, strategies, benchmark, and native checks.
+- `echo6g/` — the Python web app and its C++ engine bridge.
+- `echo6g/static/` — the page, styles, browser code, and illustrations.
+- `tests/` — checks for model inputs, results, benchmark files, and the web app.
+- `docs/MODEL.md` — a plain-language guide to the model and its limits.
+- `results/RESULTS.md` — example results and how to read them.
+- `CONTRIBUTORS.md` — the project contributor.

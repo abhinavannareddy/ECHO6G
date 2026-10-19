@@ -1,23 +1,21 @@
-import pytest
+import unittest
 
-from echo6g.models import Scenario
-from echo6g.policies import AdaptiveController, make_training_scenarios
-
-
-def test_controller_requires_training():
-    with pytest.raises(RuntimeError):
-        AdaptiveController().choose(Scenario(30, 0.8, 30, 0.9))
+from echo6g.web import evaluate_scenario
 
 
-def test_controller_returns_valid_action_after_training():
-    controller = AdaptiveController().fit(make_training_scenarios(n=80))
-    decision = controller.choose(Scenario(55, 0.8, 35, 0.93, "in_domain"))
-    assert decision.resource_level in (1, 2, 3, 4)
-    assert decision.explanation
+class AdaptivePolicyTests(unittest.TestCase):
+    def test_out_of_range_scenario_marks_adaptive_fallback(self):
+        result = evaluate_scenario({
+            "traffic_mbps": 500,
+            "channel_quality": 0.8,
+            "latency_budget_ms": 35,
+            "reliability_target": 0.93,
+        })
+        adaptive = next(option for option in result["options"]
+                        if option["policy_name"] == "echo_adaptive")
+        self.assertTrue(adaptive["fallback_used"])
+        self.assertLess(adaptive["confidence"], 0.5)
 
 
-def test_out_of_domain_triggers_fallback():
-    controller = AdaptiveController().fit(make_training_scenarios(n=80))
-    decision = controller.choose(Scenario(500, 0.8, 35, 0.93, "extreme"))
-    assert decision.fallback_used is True
-    assert decision.confidence < 0.5
+if __name__ == "__main__":
+    unittest.main()
