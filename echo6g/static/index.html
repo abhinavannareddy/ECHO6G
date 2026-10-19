@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f6f8">
+    <meta name="description" content="Compare modeled network resource strategies against your service targets before procurement.">
+    <title>ECHO-6G — Ericsson Network Buyer Workspace</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="ECHO-6G home">
+        <span class="brand-mark" aria-hidden="true">E6</span>
+        <span class="brand-name">ECHO<span>6G</span></span>
+      </a>
+      <div class="topbar-right">
+        <span class="product-label">ERICSSON NETWORK BUYER EVALUATION</span>
+        <span class="status-pill"><span class="status-dot"></span>Model ready</span>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">INDEPENDENT ERICSSON BUYER EVALUATION</p>
+          <h1 id="page-title">Make the network<br class="mobile-break"> case with confidence.</h1>
+          <p class="intro-copy">An independent screening tool for Ericsson network buyers. Test a service scenario against four resource strategies, see where requirements are met, and spot gaps to discuss before procurement.</p>
+        </div>
+        <div class="intro-aside">
+          <span class="aside-icon" aria-hidden="true">↗</span>
+          <span>SCENARIO<br>COMPARISON</span>
+        </div>
+      </section>
+
+      <div id="error-banner" class="error-banner" role="alert" hidden></div>
+
+      <section class="workspace-grid" aria-label="Network scenario evaluation">
+        <form id="scenario-form" class="panel input-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">01 / YOUR REQUIREMENTS</p>
+              <h2>Define a scenario</h2>
+            </div>
+            <span class="step-number">01</span>
+          </div>
+
+          <label class="field" for="traffic_mbps">
+            <span class="field-title">Offered traffic</span>
+            <span class="field-hint">Modelled demand for this service</span>
+            <span class="input-unit"><input id="traffic_mbps" name="traffic_mbps" type="number" min="0" max="10000" step="0.1" value="85" required><span>Mbps</span></span>
+          </label>
+
+          <label class="field" for="channel_quality">
+            <span class="field-title">Channel quality</span>
+            <span class="field-hint">Use 0.25 for poor, 1.00 for excellent</span>
+            <span class="range-control"><input id="channel_quality" name="channel_quality" type="range" min="0.25" max="1" step="0.01" value="0.82" aria-describedby="channel-output"><output id="channel-output" for="channel_quality">0.82</output></span>
+          </label>
+
+          <label class="field" for="latency_budget_ms">
+            <span class="field-title">Maximum latency</span>
+            <span class="field-hint">Your upper limit for end-to-end delay</span>
+            <span class="input-unit"><input id="latency_budget_ms" name="latency_budget_ms" type="number" min="0.1" max="10000" step="0.1" value="35" required><span>ms</span></span>
+          </label>
+
+          <label class="field" for="reliability_target">
+            <span class="field-title">Minimum reliability</span>
+            <span class="field-hint">Enter 0.95 for a 95% target</span>
+            <span class="input-unit"><input id="reliability_target" name="reliability_target" type="number" min="0.01" max="1" step="0.001" value="0.93" required><span>0–1</span></span>
+          </label>
+
+          <button class="button button-primary" type="submit"><span>Compare options</span><span aria-hidden="true">→</span></button>
+          <p class="form-note">All four options use the same scenario inputs.</p>
+        </form>
+
+        <div class="results-column">
+          <section id="recommendation-card" class="panel recommendation-card" aria-live="polite" aria-busy="true">
+            <div class="recommendation-head">
+              <div>
+                <p class="eyebrow">02 / MODEL RECOMMENDATION</p>
+                <h2 id="recommendation-title">Evaluating scenario…</h2>
+              </div>
+              <span id="recommendation-badge" class="recommendation-badge">Working</span>
+            </div>
+            <p id="recommendation-reason" class="recommendation-reason">Comparing the selected strategies against your targets.</p>
+            <div class="recommendation-metrics">
+              <div><span>SELECTED STRATEGY</span><strong id="recommendation-policy">—</strong></div>
+              <div><span>RESOURCE LEVEL</span><strong id="recommendation-resource">—</strong></div>
+              <div><span>OPTIONS MEETING TARGETS</span><strong id="recommendation-fit">—</strong></div>
+            </div>
+          </section>
+
+          <section class="panel comparison-panel" aria-labelledby="comparison-title">
+            <div class="panel-heading comparison-heading">
+              <div>
+                <p class="eyebrow">03 / SIDE-BY-SIDE</p>
+                <h2 id="comparison-title">Compare strategies</h2>
+              </div>
+              <button id="export-button" class="button button-quiet" type="button" disabled>Export CSV <span aria-hidden="true">↓</span></button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th scope="col">Strategy</th><th scope="col">Targets met</th><th scope="col">Delay</th><th scope="col">Reliability</th><th scope="col">Relative energy</th></tr></thead>
+                <tbody id="options-body"><tr><td colspan="5" class="loading-cell">Results appear here after evaluation.</td></tr></tbody>
+              </table>
+            </div>
+            <p class="table-note">Relative energy is a model score. Lower values compare only within this scenario.</p>
+          </section>
+        </div>
+      </section>
+
+      <section class="notice" aria-label="Model and affiliation notice">
+        <span class="notice-icon" aria-hidden="true">i</span>
+        <p><strong>Independent evaluation workspace.</strong> Not affiliated with or endorsed by Ericsson. This software uses a simplified synthetic model; it has no live product catalogue, pricing, hardware measurements, or 3GPP-compliant simulation. Treat results as a screening aid, not a supplier quote or deployment guarantee.</p>
+      </section>
+
+      <footer class="footer"><span>ECHO-6G <span class="footer-dot">·</span> BUYER DECISION WORKSPACE</span><span>Model assumptions are documented with the project.</span></footer>
+    </main>
+  </body>
+</html>

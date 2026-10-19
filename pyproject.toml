@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "echo6g"
+version = "0.1.0"
+description = "An independent network decision workspace for scenario comparison and procurement screening."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{name = "Abhinav"}]
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+plots = ["matplotlib>=3.7"]
+
+[project.scripts]
+echo6g = "echo6g.cli:main"
+echo6g-web = "echo6g.web:main"
+
+[tool.setuptools.packages.find]
+include = ["echo6g*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.setuptools.package-data]
+echo6g = ["static/*.html", "static/*.css", "static/*.js"]
